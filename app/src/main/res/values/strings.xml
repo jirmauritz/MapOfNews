@@ -1,0 +1,15 @@
+<resources>
+    <string name="app_name">MapOfNews</string>
+    <string name="success">Object is saved in Backendless. Please check in the console.</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="title_activity_map">Map</string>
+    <string name="filtering_desc">filtering of the news</string>
+    <string name="info_desc">information and guidance on the application</string>
+    <string name="settings_desc">opens the settings of the app</string>
+    <string name="time_desc">filtering of the news by the time</string>
+    <string name="update_desc">download the news from server and update view</string>
+    <string name="resotre_desc">restore view of the map to default (whole map)</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+</resources>

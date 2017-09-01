@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- Where to shift the map center when user taps on marker -->
+    <dimen name="map_xoffset_when_marker_focus">170dp</dimen>
+    <dimen name="map_yoffset_when_marker_focus">-20dp</dimen>
+
+</resources>
