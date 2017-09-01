@@ -73,6 +73,7 @@ class MainActivity : AppCompatActivity(), MapViewFragment.OnFragmentInteractionL
         rightPanel.setPanelSlideListener(this)
     }
 
+    @Suppress("UNUSED_PARAMETER")
     fun onRestoreClick(v: View) {
         mapViewFragment.restore()
     }
@@ -95,8 +96,7 @@ class MainActivity : AppCompatActivity(), MapViewFragment.OnFragmentInteractionL
     }
 
     // Slide Panel Event Listener methods
-    override fun onPanelClosed(panel: View?) {
-    }
+    override fun onPanelClosed(panel: View?) {}
     override fun onPanelSlide(panel: View?, slideOffset: Float) {}
 
     /**
@@ -104,7 +104,11 @@ class MainActivity : AppCompatActivity(), MapViewFragment.OnFragmentInteractionL
      * We move the map back at the position before opening panel.
      */
     override fun onPanelOpened(panel: View?) {
-        mapViewFragment.centralizeMarker(false, null)
+        if (mapViewFragment.mapUntouched) {
+            mapViewFragment.centralizeMarker(false, null)
+            // we mark the map as 'touched' as we dont want repeatedly moving a map when user manually opens the pane
+            mapViewFragment.mapUntouched = false
+        }
     }
 
 }

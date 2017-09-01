@@ -21,7 +21,7 @@ import cz.mapofnews.data.EventManager
  * Use the [MapViewFragment.newInstance] factory method to
  * create an instance of this fragment.
  */
-class MapViewFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClickListener {
+class MapViewFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClickListener, GoogleMap.OnCameraMoveStartedListener {
 
     // default zoom (will be reset to the number from properties)
     private var defaultZoom: Float = 7f
@@ -37,6 +37,8 @@ class MapViewFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClickL
     private lateinit var gMap: GoogleMap
     // center of the map
     private lateinit var mapCenter: LatLng
+    // boolean is true only if the last interaction with the map was marker, becomes false when touching the map
+    var mapUntouched = false
 
     // tag that is used in the logs
     private val TAG = MapViewFragment::class.java.name
@@ -59,7 +61,7 @@ class MapViewFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClickL
         val rootView = inflater.inflate(R.layout.fragment_map_view, container, false)
 
         val mapView = rootView.findViewById<MapView>(R.id.mapView)
-        mapView.onCreate(savedInstanceState);
+        mapView.onCreate(savedInstanceState)
 
         mapView.onResume() // needed to get the map to display immediately
 
@@ -80,6 +82,9 @@ class MapViewFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClickL
 
         // register for the marker click
         gMap.setOnMarkerClickListener(this)
+
+        // register for the map click
+        gMap.setOnCameraMoveStartedListener(this)
 
         // set map style from map_style.json, possible to edit on https://mapstyle.withgoogle.com/
         try {
@@ -124,9 +129,11 @@ class MapViewFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClickL
         gMap.moveCamera(CameraUpdateFactory.newLatLngZoom(mapCenter, defaultZoom))
     }
 
-    fun centralizeMarker(panelOpened: Boolean, markerPosition: LatLng?) {
+    fun centralizeMarker(panelOpened: Boolean, markerPositionParam: LatLng?) {
         // if marker is null, force him to be center of the map
-        val markerPosition = markerPosition ?: gMap.cameraPosition.target
+        val markerPosition = markerPositionParam ?: gMap.cameraPosition.target
+        // set untouched
+        mapUntouched = true
         // move map so that the marker is centralized in the left part
         var dX = resources.getDimensionPixelSize(R.dimen.map_xoffset_when_marker_focus)
         var dY = resources.getDimensionPixelSize(R.dimen.map_yoffset_when_marker_focus)
@@ -155,6 +162,13 @@ class MapViewFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClickL
             }
         }
         return false
+    }
+
+    override fun onCameraMoveStarted(reason: Int) {
+        // set untouched only if user moved with the map
+        if (reason == GoogleMap.OnCameraMoveStartedListener.REASON_GESTURE) {
+            mapUntouched = false
+        }
     }
 
     override fun onAttach(context: Context?) {
