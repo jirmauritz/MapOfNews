@@ -77,13 +77,18 @@ class MainActivity : AppCompatActivity(), MapViewFragment.OnFragmentInteractionL
         mapViewFragment.restore()
     }
 
+    /**
+     * When the marker is clicked, this method is called to show the right panel.
+     */
     override fun onEventClick(eventId: Long) {
         // load data from data layer
         val event: Event = EventManager.getById(eventId) ?:
-                throw IllegalArgumentException("Event with id ${eventId} does not exists")
+                throw IllegalArgumentException("Event with id $eventId does not exists")
 
         // assign data to the layout
-        eventNameView.text = event.title
+        titleView.text = event.title
+        abstractView.text = event.abstract
+        sourceView.text = event.source
 
         // open the panel
         rightPanel.closePane()

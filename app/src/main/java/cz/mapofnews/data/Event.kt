@@ -5,5 +5,7 @@ class Event(val id: Long,
             val type: EventType,
             val lat: Double,
             val lng: Double,
-            val abstract: String) {
+            val abstract: String,
+            val source: String,
+            val text: String?) {
 }
