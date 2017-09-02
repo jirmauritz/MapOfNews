@@ -11,7 +11,9 @@ import android.view.ViewGroup
 import com.google.android.gms.maps.*
 import com.google.android.gms.maps.model.*
 import cz.mapofnews.R
-import cz.mapofnews.data.EventManager
+import cz.mapofnews.api.AppCallback
+import cz.mapofnews.service.Event
+import cz.mapofnews.service.RetrieveManager
 
 /**
  * Google Maps view fragment.
@@ -116,13 +118,17 @@ class MapViewFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClickL
     }
 
     private fun loadAndShowMarkers() {
-        for (event in EventManager.getAllEvents()) {
-            val marker = gMap.addMarker(MarkerOptions()
-                    .position(LatLng(event.lat, event.lng))
-                    .alpha(0.9f)
-                    .icon(BitmapDescriptorFactory.fromResource(event.type.resNum)))
-            marker.tag = event.id
-        }
+        RetrieveManager.fetchAllEvents(object : AppCallback<List<Event>> {
+            override fun handleResponse(response: List<Event>) {
+                for (event in response) {
+                    val marker = gMap.addMarker(MarkerOptions()
+                            .position(LatLng(event.lat, event.lng))
+                            .alpha(0.9f)
+                            .icon(BitmapDescriptorFactory.fromResource(event.type.resNum)))
+                    marker.tag = event.objectId
+                }
+            }
+        })
     }
 
     fun restore() {
@@ -154,7 +160,7 @@ class MapViewFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClickL
                 // centralize map on marker
                 centralizeMarker(true, marker.position)
                 // let the main activity know the marker was clicked
-                mListener?.onEventClick(marker.tag as Long)
+                mListener?.onEventClick(marker.tag as String)
 
                 return true
             } catch (e: NumberFormatException) {
@@ -193,7 +199,7 @@ class MapViewFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClickL
      *
      */
     interface OnFragmentInteractionListener {
-        fun onEventClick(eventId: Long)
+        fun onEventClick(eventId: String)
     }
 
     companion object {

@@ -6,8 +6,8 @@ import android.view.View
 import com.backendless.Backendless
 import cz.mapofnews.R
 import cz.mapofnews.android.widgets.MySlidingPaneLayout
-import cz.mapofnews.data.Event
-import cz.mapofnews.data.EventManager
+import cz.mapofnews.service.Event
+import cz.mapofnews.service.RetrieveManager
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.layout_right_panel.*
 import java.util.*
@@ -81,10 +81,10 @@ class MainActivity : AppCompatActivity(), MapViewFragment.OnFragmentInteractionL
     /**
      * When the marker is clicked, this method is called to show the right panel.
      */
-    override fun onEventClick(eventId: Long) {
+    override fun onEventClick(eventId: String) {
         // load data from data layer
-        val event: Event = EventManager.getById(eventId) ?:
-                throw IllegalArgumentException("Event with id $eventId does not exists")
+        val event: Event = RetrieveManager.events.get(eventId) ?:
+                throw IllegalArgumentException("Event with objectId $eventId does not exists")
 
         // assign data to the layout
         titleView.text = event.title
