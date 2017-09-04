@@ -117,7 +117,10 @@ class MapViewFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClickL
         loadAndShowMarkers()
     }
 
-    private fun loadAndShowMarkers() {
+    fun loadAndShowMarkers() {
+        // first remove all markers in case some are in the map
+        gMap.clear()
+        // retrieve markers from the backend
         RetrieveManager.fetchAllEvents(object : AppCallback<List<Event>> {
             override fun handleResponse(response: List<Event>) {
                 for (event in response) {
@@ -132,7 +135,7 @@ class MapViewFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClickL
     }
 
     fun restore() {
-        gMap.moveCamera(CameraUpdateFactory.newLatLngZoom(mapCenter, defaultZoom))
+        gMap.animateCamera(CameraUpdateFactory.newLatLngZoom(mapCenter, defaultZoom))
     }
 
     fun centralizeMarker(panelOpened: Boolean, markerPositionParam: LatLng?) {
@@ -221,7 +224,6 @@ class MapViewFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClickL
          * @param eastBorder East border of the map.
          * @return A new instance of fragment MapViewFragment.
          */
-        // TODO: Rename and change types and number of parameters
         fun newInstance(defaultZoom: Float, southBorder: Double, westBorder: Double, northBorder: Double, eastBorder: Double): MapViewFragment {
             val fragment = MapViewFragment()
             val args = Bundle()

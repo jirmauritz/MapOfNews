@@ -1,5 +1,7 @@
 package cz.mapofnews.service
 
+import java.util.*
+
 /**
  * Class represents an event, which can be viewed byu user.
  * It is connected to some time, type and place. Does not contain
@@ -8,6 +10,7 @@ package cz.mapofnews.service
 class Event {
     lateinit var objectId: String
     lateinit var type: EventType
+    lateinit var eventDate: Date
     var title = ""
     var abstract = ""
     var source = ""

@@ -10,8 +10,10 @@
     <string name="update_desc">download the news from server and update view</string>
     <string name="resotre_desc">restore view of the map to default (whole map)</string>
 
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="read_it">Přečíst</string>
     <string name="source">Zdroj:</string>
+    <string name="when">Kdy:</string>
+    <string name="today">dnes</string>
+    <string name="yesterday">včera</string>
+    <string name="date_format">d.M.</string>
 </resources>

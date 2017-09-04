@@ -10,6 +10,7 @@ import cz.mapofnews.service.Event
 import cz.mapofnews.service.RetrieveManager
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.layout_right_panel.*
+import java.text.SimpleDateFormat
 import java.util.*
 
 
@@ -76,6 +77,14 @@ class MainActivity : AppCompatActivity(), MapViewFragment.OnFragmentInteractionL
     @Suppress("UNUSED_PARAMETER")
     fun onRestoreClick(v: View) {
         mapViewFragment.restore()
+        mapViewFragment.mapUntouched = false
+        rightPanel.openPane()
+    }
+
+    fun onUpdateClick(v: View) {
+        mapViewFragment.loadAndShowMarkers()
+        mapViewFragment.mapUntouched = false
+        rightPanel.openPane()
     }
 
     /**
@@ -83,13 +92,14 @@ class MainActivity : AppCompatActivity(), MapViewFragment.OnFragmentInteractionL
      */
     override fun onEventClick(eventId: String) {
         // load data from data layer
-        val event: Event = RetrieveManager.events.get(eventId) ?:
+        val event: Event = RetrieveManager.events[eventId] ?:
                 throw IllegalArgumentException("Event with objectId $eventId does not exists")
 
         // assign data to the layout
         titleView.text = event.title
         abstractView.text = event.abstract
         sourceView.text = event.source
+        dateView.text = extractDate(event.eventDate)
 
         // open the panel
         rightPanel.closePane()
@@ -97,6 +107,7 @@ class MainActivity : AppCompatActivity(), MapViewFragment.OnFragmentInteractionL
 
     // Slide Panel Event Listener methods
     override fun onPanelClosed(panel: View?) {}
+
     override fun onPanelSlide(panel: View?, slideOffset: Float) {}
 
     /**
@@ -111,4 +122,28 @@ class MainActivity : AppCompatActivity(), MapViewFragment.OnFragmentInteractionL
         }
     }
 
+    private fun extractDate(date: Date): String {
+        val eventDate = Calendar.getInstance()
+        eventDate.time = date
+        val today = Calendar.getInstance()
+        // set all timing variables to 0 so that we compare only dates
+        eventDate.isLenient = false
+        eventDate.set(Calendar.HOUR_OF_DAY, 0)
+        eventDate.set(Calendar.MINUTE, 0)
+        eventDate.set(Calendar.SECOND, 0)
+        eventDate.set(Calendar.MILLISECOND, 0)
+        today.isLenient = false
+        today.set(Calendar.HOUR_OF_DAY, 0)
+        today.set(Calendar.MINUTE, 0)
+        today.set(Calendar.SECOND, 0)
+        today.set(Calendar.MILLISECOND, 0)
+
+        // today
+        if (eventDate == today) return getString(R.string.today)
+        // yesterday
+        today.add(Calendar.DATE, -1)
+        if (eventDate == today) return getString(R.string.yesterday)
+        // other date
+        return SimpleDateFormat(getString(R.string.date_format)).format(date)
+    }
 }
