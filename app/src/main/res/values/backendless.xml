@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!--application id in backendless-->
+    <string name="APPLICATION_ID">EB9D685F-99F1-FE59-FFE0-D38250D8C100</string>
+    <!--api key to access backendless-->
+    <string name="API_KEY">00B888C6-443C-77A3-FFCE-07D93D15AD00</string>
+    <!--name of the server-->
+    <string name="SERVER_URL">https://api.backendless.com</string>
+</resources>

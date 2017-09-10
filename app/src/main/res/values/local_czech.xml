@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!--latitute of the maximal right corner of the view-->
+    <item name="northBorder" format="float" type="string">51.05</item>
+    <!--longitude of the maximal right corner of the view-->
+    <item name="westBorder" format="float" type="string">12.131196</item>
+    <!--latitute of the maximal right corner of the view-->
+    <item name="southBorder" format="float" type="string">48.55</item>
+    <!--longitude of the maximal right corner of the view-->
+    <item name="eastBorder" format="float" type="string">18.881621</item>
+    <!--default zoom for the country (real num)-->
+    <item name="defaultZoom" format="string" type="string">7.0</item>
+</resources>

@@ -1,6 +1,7 @@
 package cz.mapofnews.android
 
 import android.os.Bundle
+import android.support.v4.app.Fragment
 import android.support.v7.app.AppCompatActivity
 import android.view.View
 import com.backendless.Backendless
@@ -8,60 +9,50 @@ import cz.mapofnews.R
 import cz.mapofnews.android.widgets.MySlidingPaneLayout
 import cz.mapofnews.service.Event
 import cz.mapofnews.service.RetrieveManager
+import dagger.android.AndroidInjection
+import dagger.android.AndroidInjector
+import dagger.android.DispatchingAndroidInjector
+import dagger.android.support.HasSupportFragmentInjector
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.layout_right_panel.*
 import java.text.SimpleDateFormat
 import java.util.*
+import javax.inject.Inject
 
 
-class MainActivity : AppCompatActivity(), MapViewFragment.OnFragmentInteractionListener, MySlidingPaneLayout.PanelSlideListener {
+class MainActivity :
+        AppCompatActivity(),
+        MapViewFragment.OnFragmentInteractionListener,
+        MySlidingPaneLayout.PanelSlideListener,
+        HasSupportFragmentInjector {
 
-    // property file name (must be located in assets directory)
-    private val PROPERTY_FILE_NAME = "app.properties"
-    // localization properties file name (must be located in assets directory)
-    private val LOCALIZATION_FILE_NAME = "czechia.properties"
+    // injector for fragments
+    @Inject lateinit var fragmentInjector: DispatchingAndroidInjector<Fragment>
+
+    private val SERVER_URL: String by lazy { resources.getString(R.string.SERVER_URL) }
+    private val APPLICATION_ID: String by lazy { resources.getString(R.string.APPLICATION_ID) }
+    private val API_KEY: String by lazy { resources.getString(R.string.API_KEY) }
+
 
     // tag for logging
     private val TAG = MainActivity::class.java.name
 
     // map view fragment
     private lateinit var mapViewFragment: MapViewFragment
+
     // right pane
     private lateinit var rightPanel: MySlidingPaneLayout
 
+    // data manager
+    @Inject lateinit var retrieveManager: RetrieveManager
+
     override fun onCreate(savedInstanceState: Bundle?) {
+        AndroidInjection.inject(this)
         super.onCreate(savedInstanceState)
 
-        // load properties file
-        val prop = Properties()
-        baseContext.assets.open(PROPERTY_FILE_NAME).use {
-            prop.load(it)
-        }
-
-        // load localization properties
-        val localProp = Properties()
-        baseContext.assets.open(LOCALIZATION_FILE_NAME).use {
-            localProp.load(it)
-        }
-
         // initialize backendless app and conect to the server
-        Backendless.setUrl(prop.getProperty("SERVER_URL"))
-        Backendless.initApp(applicationContext, prop.getProperty("APPLICATION_ID"), prop.getProperty("API_KEY"))
-
-        // create map view fragment
-        mapViewFragment = MapViewFragment.newInstance(
-                localProp.getProperty("DEFAULT_ZOOM").toFloat(),
-                localProp.getProperty("SOUTH_BORDER").toDouble(),
-                localProp.getProperty("WEST_BORDER").toDouble(),
-                localProp.getProperty("NORTH_BORDER").toDouble(),
-                localProp.getProperty("EAST_BORDER").toDouble()
-        )
-        // inject map view fragment into our layout
-        supportFragmentManager
-                .beginTransaction()
-                .replace(R.id.fragment_frame_for_map, mapViewFragment, mapViewFragment::javaClass.name)
-                .addToBackStack(null)
-                .commit()
+        Backendless.setUrl(SERVER_URL)
+        Backendless.initApp(applicationContext, APPLICATION_ID, API_KEY)
 
         // set the main view to this clas
         setContentView(R.layout.activity_main)
@@ -92,7 +83,7 @@ class MainActivity : AppCompatActivity(), MapViewFragment.OnFragmentInteractionL
      */
     override fun onEventClick(eventId: String) {
         // load data from data layer
-        val event: Event = RetrieveManager.events[eventId] ?:
+        val event: Event = retrieveManager.events[eventId] ?:
                 throw IllegalArgumentException("Event with objectId $eventId does not exists")
 
         // assign data to the layout
@@ -146,4 +137,13 @@ class MainActivity : AppCompatActivity(), MapViewFragment.OnFragmentInteractionL
         // other date
         return SimpleDateFormat(getString(R.string.date_format)).format(date)
     }
+
+    override fun supportFragmentInjector(): AndroidInjector<Fragment> {
+        return fragmentInjector
+    }
+
+    fun registerMapViewFragment(fragment: MapViewFragment) {
+        mapViewFragment = fragment
+    }
+
 }

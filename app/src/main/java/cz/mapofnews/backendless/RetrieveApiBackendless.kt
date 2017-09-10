@@ -8,11 +8,14 @@ import cz.mapofnews.api.AppCallback
 import cz.mapofnews.api.RetrieveApi
 import cz.mapofnews.service.Event
 import cz.mapofnews.service.News
+import javax.inject.Inject
+import javax.inject.Singleton
 
 /**
- * Implementation of RetrieveApi for Backendless service.
+ * Implementation of RetrieveApiComponent for Backendless service.
  */
-class RetrieveApiBackendless : RetrieveApi {
+@Singleton
+class RetrieveApiBackendless @Inject constructor() : RetrieveApi {
 
     override fun retrieveAllEvents(callback: AppCallback<List<Event>>) {
         Backendless.Persistence.of(Event::class.java).find(createAsyncCallback(callback))
@@ -22,7 +25,7 @@ class RetrieveApiBackendless : RetrieveApi {
         Backendless.Persistence.of(News::class.java).findById(eventId, createAsyncCallback(callback))
     }
 
-    fun <T> createAsyncCallback(appCallback: AppCallback<T>): AsyncCallback<T> {
+    private fun <T> createAsyncCallback(appCallback: AppCallback<T>): AsyncCallback<T> {
         return object : AsyncCallback<T> {
             override fun handleFault(fault: BackendlessFault?) {
                 throw ApiException("Failed to retrieve objects from server: ${fault?.detail}", fault?.code)

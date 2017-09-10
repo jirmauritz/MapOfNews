@@ -1,6 +1,7 @@
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
+apply plugin: 'kotlin-kapt'
 
 android {
     compileSdkVersion 26
@@ -12,29 +13,48 @@ android {
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        vectorDrawables.useSupportLibrary = true
     }
+    productFlavors {
+        instrumentationTests {
+            minSdkVersion 18
+        }
+    }
+
     buildTypes {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+    packagingOptions {
+        exclude 'LICENSE.txt'
+    }
+    lintOptions {
+        abortOnError false
+    }
+
 }
 
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
-    androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
-        exclude group: 'com.android.support', module: 'support-annotations'
-    })
     compile "org.jetbrains.kotlin:kotlin-stdlib-jre7:$kotlin_version"
     compile group: 'com.backendless', name: 'backendless', version: '4.0.3'
     compile 'com.android.support:appcompat-v7:26.0.0-alpha1'
     compile 'com.android.support.constraint:constraint-layout:1.0.2'
     compile 'com.google.android.gms:play-services-maps:11.0.4'
     compile 'com.android.support:support-v4:26.+'
-    testCompile 'junit:junit:4.12'
-    testCompile 'com.android.support.test:testing-support-lib:0.1'
-    testCompile 'com.android.support.test.uiautomator:uiautomator-v18:2.1.2'
+    compile "com.google.dagger:dagger:$dagger_version"
+    compile "com.google.dagger:dagger-android-support:$dagger_version"
+    annotationProcessor "com.google.dagger:dagger-compiler:$dagger_version"
+    annotationProcessor "com.google.dagger:dagger-android-processor:$dagger_version"
+    kapt "com.google.dagger:dagger-compiler:$dagger_version"
+    kapt "com.google.dagger:dagger-android-processor:$dagger_version"
+    // instrumentation testing libraries
+    instrumentationTestsCompile 'com.android.support.test:runner:0.5'
+    instrumentationTestsCompile 'com.android.support.test:rules:0.5'
+    instrumentationTestsCompile 'com.android.support:support-annotations:26.0.0-alpha1'
+    instrumentationTestsCompile 'com.android.support.test.uiautomator:uiautomator-v18:2.1.2'
 }
 repositories {
     mavenCentral()

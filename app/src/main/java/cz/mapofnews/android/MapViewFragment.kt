@@ -14,24 +14,20 @@ import cz.mapofnews.R
 import cz.mapofnews.api.AppCallback
 import cz.mapofnews.service.Event
 import cz.mapofnews.service.RetrieveManager
+import dagger.android.support.AndroidSupportInjection
+import javax.inject.Inject
 
 /**
  * Google Maps view fragment.
  * Activities that contain this fragment must implement the
  * [MapViewFragment.OnFragmentInteractionListener] interface
  * to handle interaction events.
- * Use the [MapViewFragment.newInstance] factory method to
- * create an instance of this fragment.
  */
-class MapViewFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClickListener, GoogleMap.OnCameraMoveStartedListener {
-
-    // default zoom (will be reset to the number from properties)
-    private var defaultZoom: Float = 7f
-    // borders of the map (will be overriden by arguments, default numbers are set to Czechia)
-    private var southBorder: Double = 48.55
-    private var westBorder: Double = 12.131196
-    private var northBorder: Double = 51.05
-    private var eastBorder: Double = 18.881621
+class MapViewFragment :
+        Fragment(),
+        OnMapReadyCallback,
+        GoogleMap.OnMarkerClickListener,
+        GoogleMap.OnCameraMoveStartedListener {
 
     private var mListener: OnFragmentInteractionListener? = null
 
@@ -45,15 +41,18 @@ class MapViewFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClickL
     // tag that is used in the logs
     private val TAG = MapViewFragment::class.java.name
 
+    // inject retrieve manager
+    @Inject lateinit var retrieveManager: RetrieveManager
+
+    private val defaultZoom: Float by lazy { resources.getString(R.string.defaultZoom).toFloat() }
+    private val southBorder: Double by lazy { resources.getString(R.string.southBorder).toDouble() }
+    private val westBorder: Double by lazy { resources.getString(R.string.westBorder).toDouble() }
+    private val northBorder: Double by lazy { resources.getString(R.string.northBorder).toDouble() }
+    private val eastBorder: Double by lazy { resources.getString(R.string.eastBorder).toDouble() }
+
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        if (arguments != null) {
-            defaultZoom = arguments.getFloat(DEFAULT_ZOOM)
-            southBorder = arguments.getDouble(SOUTH_BORDER)
-            westBorder = arguments.getDouble(WEST_BORDER)
-            northBorder = arguments.getDouble(NORTH_BORDER)
-            eastBorder = arguments.getDouble(EAST_BORDER)
-        }
     }
 
     override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -105,7 +104,9 @@ class MapViewFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClickL
         gMap.setMinZoomPreference(defaultZoom)
 
         // restrict the view on the country only
-        val viewBorder = LatLngBounds(LatLng(southBorder, westBorder), LatLng(northBorder, eastBorder))
+        val viewBorder = LatLngBounds(
+                LatLng(southBorder, westBorder),
+                LatLng(northBorder, eastBorder))
         // constrain the camera target to the country bounds
         gMap.setLatLngBoundsForCameraTarget(viewBorder)
 
@@ -121,7 +122,7 @@ class MapViewFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClickL
         // first remove all markers in case some are in the map
         gMap.clear()
         // retrieve markers from the backend
-        RetrieveManager.fetchAllEvents(object : AppCallback<List<Event>> {
+        retrieveManager.fetchAllEvents(object : AppCallback<List<Event>> {
             override fun handleResponse(response: List<Event>) {
                 for (event in response) {
                     val marker = gMap.addMarker(MarkerOptions()
@@ -135,7 +136,7 @@ class MapViewFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClickL
     }
 
     fun restore() {
-        gMap.animateCamera(CameraUpdateFactory.newLatLngZoom(mapCenter, defaultZoom))
+        //     gMap.animateCamera(CameraUpdateFactory.newLatLngZoom(mapCenter, defaultZoom.toFloat()))
     }
 
     fun centralizeMarker(panelOpened: Boolean, markerPositionParam: LatLng?) {
@@ -181,12 +182,15 @@ class MapViewFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClickL
     }
 
     override fun onAttach(context: Context?) {
+        AndroidSupportInjection.inject(this)
         super.onAttach(context)
-        if (context is OnFragmentInteractionListener) {
-            mListener = context
-        } else {
-            throw RuntimeException(context!!.toString() + " must implement OnFragmentInteractionListener")
-        }
+        // get parent activity
+        if (context !is MainActivity) throw RuntimeException(context!!.toString() + " must be MainActivity.")
+        val mainActivity: MainActivity = context
+        // register fragment in activity
+        mainActivity.registerMapViewFragment(this)
+        // register activity in fragment
+        mListener = context
     }
 
     override fun onDetach() {
@@ -203,37 +207,5 @@ class MapViewFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClickL
      */
     interface OnFragmentInteractionListener {
         fun onEventClick(eventId: String)
-    }
-
-    companion object {
-        private val DEFAULT_ZOOM = "DEFAULT_ZOOM"
-        private val SOUTH_BORDER = "SOUTH_BORDER"
-        private val WEST_BORDER = "WEST_BORDER"
-        private val NORTH_BORDER = "NORTH_BORDER"
-        private val EAST_BORDER = "EAST_BORDER"
-
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters. Center
-         * of the map will be computed from the borders.
-         *
-         * @param defaultZoom Zoom level for the Google Maps.
-         * @param southBorder South border of the map.
-         * @param westBorder West border of the map.
-         * @param northBorder North border of the map.
-         * @param eastBorder East border of the map.
-         * @return A new instance of fragment MapViewFragment.
-         */
-        fun newInstance(defaultZoom: Float, southBorder: Double, westBorder: Double, northBorder: Double, eastBorder: Double): MapViewFragment {
-            val fragment = MapViewFragment()
-            val args = Bundle()
-            args.putFloat(DEFAULT_ZOOM, defaultZoom)
-            args.putDouble(SOUTH_BORDER, southBorder)
-            args.putDouble(WEST_BORDER, westBorder)
-            args.putDouble(NORTH_BORDER, northBorder)
-            args.putDouble(EAST_BORDER, eastBorder)
-            fragment.arguments = args
-            return fragment
-        }
     }
 }
