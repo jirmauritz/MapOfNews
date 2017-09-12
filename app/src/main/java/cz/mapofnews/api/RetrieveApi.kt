@@ -22,6 +22,6 @@ interface RetrieveApi {
      * @param eventId id of the event, for which news will be fetched
      * @param callback defined what happens after the data are fetched
      */
-    fun retrieveNews(eventId: String, callback: AppCallback<News>)
+    fun retrieveNews(eventId: String, callback: AppCallback<News?>)
 
 }

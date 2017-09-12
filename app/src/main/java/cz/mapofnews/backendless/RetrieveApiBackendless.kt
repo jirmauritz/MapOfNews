@@ -21,7 +21,7 @@ class RetrieveApiBackendless @Inject constructor() : RetrieveApi {
         Backendless.Persistence.of(Event::class.java).find(createAsyncCallback(callback))
     }
 
-    override fun retrieveNews(eventId: String, callback: AppCallback<News>) {
+    override fun retrieveNews(eventId: String, callback: AppCallback<News?>) {
         Backendless.Persistence.of(News::class.java).findById(eventId, createAsyncCallback(callback))
     }
 

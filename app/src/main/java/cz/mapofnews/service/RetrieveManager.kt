@@ -29,9 +29,9 @@ class RetrieveManager @Inject constructor(private val retrieveApi: RetrieveApi) 
     }
 
     fun fetchNews(eventId: String) {
-        retrieveApi.retrieveNews(eventId, object : AppCallback<News> {
-            override fun handleResponse(response: News) {
-                news.put(eventId, response)
+        retrieveApi.retrieveNews(eventId, object : AppCallback<News?> {
+            override fun handleResponse(response: News?) {
+                if (response != null) news.put(eventId, response)
             }
         })
     }
