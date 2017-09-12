@@ -6,7 +6,13 @@ package cz.mapofnews.service
  * that the news could be large and it is not neccessarry to load
  * news for all events.
  */
-class News {
+class News() {
+
+    constructor(objectId: String, text: String) : this() {
+        this.objectId = objectId
+        this.text = text
+    }
+
     lateinit var objectId: String
     var text: String = ""
 }

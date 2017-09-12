@@ -1,4 +1,4 @@
-package cz.mapofnews
+package cz.mapofnews.config
 
 import android.app.Activity
 import android.app.Application
@@ -7,7 +7,7 @@ import dagger.android.HasActivityInjector
 import javax.inject.Inject
 
 
-class App : Application(), HasActivityInjector {
+open class App : Application(), HasActivityInjector {
     @Inject
     lateinit var dispatchingActivityInjector: DispatchingAndroidInjector<Activity>
 

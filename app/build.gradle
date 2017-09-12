@@ -12,8 +12,10 @@ android {
         targetSdkVersion 26
         versionCode 1
         versionName "1.0"
-        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunner "cz.mapofnews.testconfig.MapOfNewsTestRunner"
         vectorDrawables.useSupportLibrary = true
+        // Enabling multidex support.
+        multiDexEnabled true
     }
     productFlavors {
         instrumentationTests {
@@ -44,6 +46,7 @@ dependencies {
     compile 'com.android.support.constraint:constraint-layout:1.0.2'
     compile 'com.google.android.gms:play-services-maps:11.0.4'
     compile 'com.android.support:support-v4:26.+'
+    compile 'com.android.support:multidex:1.0.1'
     compile "com.google.dagger:dagger:$dagger_version"
     compile "com.google.dagger:dagger-android-support:$dagger_version"
     annotationProcessor "com.google.dagger:dagger-compiler:$dagger_version"
@@ -55,6 +58,9 @@ dependencies {
     instrumentationTestsCompile 'com.android.support.test:rules:0.5'
     instrumentationTestsCompile 'com.android.support:support-annotations:26.0.0-alpha1'
     instrumentationTestsCompile 'com.android.support.test.uiautomator:uiautomator-v18:2.1.2'
+    instrumentationTestsCompile 'org.mockito:mockito-android:2.6.3'
+    instrumentationTestsCompile 'com.nhaarman:mockito-kotlin:1.5.0'
+    kaptAndroidTestInstrumentationTests "com.google.dagger:dagger-compiler:$dagger_version"
 }
 repositories {
     mavenCentral()
