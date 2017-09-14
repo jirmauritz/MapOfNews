@@ -14,6 +14,7 @@ class Event() {
                 eventDate: Date,
                 title: String,
                 abstract: String,
+                imageUrl: String?,
                 source: String,
                 link: String?,
                 lat: Double,
@@ -24,6 +25,7 @@ class Event() {
         this.eventDate = eventDate
         this.title = title
         this.abstract = abstract
+        this.imageUrl = imageUrl
         this.source = source
         this.link = link
         this.lat = lat
@@ -36,6 +38,7 @@ class Event() {
     lateinit var eventDate: Date
     var title = ""
     var abstract = ""
+    var imageUrl: String? = null
     var source = ""
     var link: String? = null
     var lat: Double  = 0.0
@@ -43,7 +46,7 @@ class Event() {
     var newsId: String? = null
 
     override fun toString(): String {
-        return "Event(objectId='$objectId', type=$type, eventDate=$eventDate, title='$title', abstract='$abstract', source='$source', link=$link, lat=$lat, lng=$lng, newsId=$newsId)"
+        return "Event(objectId='$objectId', type=$type, eventDate=$eventDate, title='$title', abstract='$abstract', imageUrl=$imageUrl, source='$source', link=$link, lat=$lat, lng=$lng, newsId=$newsId)"
     }
 
 }

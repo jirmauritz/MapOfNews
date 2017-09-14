@@ -7,6 +7,10 @@ import android.support.v4.app.Fragment
 import android.support.v7.app.AppCompatActivity
 import android.view.View
 import com.backendless.Backendless
+import com.nostra13.universalimageloader.core.DisplayImageOptions
+import com.nostra13.universalimageloader.core.ImageLoader
+import com.nostra13.universalimageloader.core.ImageLoaderConfiguration
+import com.nostra13.universalimageloader.core.assist.ImageScaleType
 import cz.mapofnews.R
 import cz.mapofnews.android.widgets.MySlidingPaneLayout
 import cz.mapofnews.api.AppCallback
@@ -22,7 +26,6 @@ import kotlinx.android.synthetic.main.layout_right_panel.*
 import java.text.SimpleDateFormat
 import java.util.*
 import javax.inject.Inject
-
 
 class MainActivity :
         AppCompatActivity(),
@@ -40,6 +43,9 @@ class MainActivity :
 
     // tag for logging
     private val TAG = MainActivity::class.java.name
+
+    // image loader
+    private val imageLoader by lazy { ImageLoader.getInstance() }
 
     // map view fragment
     private lateinit var mapViewFragment: MapViewFragment
@@ -60,6 +66,15 @@ class MainActivity :
         // initialize backendless app and conect to the server
         Backendless.setUrl(SERVER_URL)
         Backendless.initApp(applicationContext, APPLICATION_ID, API_KEY)
+
+        // initialize instance of image loader
+        val imageLoaderOptions = DisplayImageOptions.Builder()
+                .cacheInMemory(true)
+                .delayBeforeLoading(0)
+                .showImageOnLoading(R.drawable.preload)
+                .imageScaleType(ImageScaleType.EXACTLY_STRETCHED)
+                .build()
+        imageLoader.init(ImageLoaderConfiguration.Builder(this).defaultDisplayImageOptions(imageLoaderOptions).build())
 
         // set the main view to this clas
         setContentView(R.layout.activity_main)
@@ -112,6 +127,12 @@ class MainActivity :
             readBtn.text = resources.getString(R.string.read_it)
             readBtn.setOnClickListener({ view -> startNewsActivity(view) })
             readBtn.visibility = View.VISIBLE
+        }
+        // if the event contains image, show it
+        if (event.imageUrl != null) {
+            imageLoader.displayImage(event.imageUrl, imageView)
+        } else {
+            imageView.setImageDrawable(null)
         }
 
         // store event

@@ -43,7 +43,7 @@ dependencies {
     compile "org.jetbrains.kotlin:kotlin-stdlib-jre7:$kotlin_version"
     compile group: 'com.backendless', name: 'backendless', version: '4.0.3'
     // images easy loading
-//    compile 'com.nostra13.universalimageloader:universal-image-loader:1.9.5'
+    compile 'com.nostra13.universalimageloader:universal-image-loader:1.9.5'
     // dagger support
     compile "com.google.dagger:dagger:$dagger_version"
     compile "com.google.dagger:dagger-android-support:$dagger_version"

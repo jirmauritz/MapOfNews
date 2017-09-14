@@ -34,6 +34,7 @@ class TestingData {
                                 "nehoda; zvěř na vozovce; Dopravní nehoda osobního vozidla - střet s lesní zvěří. " +
                                 "Místo dopravní nehody průjezdné. Vozidlo po DN odstaveno na krajnici, částečně " +
                                 "zasahuje do jízdního pruhu.",
+                        null,
                         "Nebrzdi.cz",
                         "http://www.nebrzdi.cz/?id=415050&do=showSingleAccident",
                         49.409136,
@@ -46,6 +47,7 @@ class TestingData {
                         "Voda ve Strašnicích v neděli kolem půl čtvré odpoledne zatopila ulici K Rybníčkům a " +
                                 "podemlela vozovku. Unikat na povrch začala kvůli prasklému potrubí, které " +
                                 "vodohospodáři musí v nejbližších dnech opravit.",
+                        null,
                         "Blesk.cz",
                         "http://www.blesk.cz/clanek/regiony-praha-praha-zpravy/473416/potopa-ve-strasnicich-v-ulici-k-rybnickum-prasklo-potrubi.html",
                         50.073531,
@@ -57,6 +59,7 @@ class TestingData {
                         "Devatenáctiletý mladík v Praze nepřežil střet s vlakem",
                         "Na nádraží v pražských Klánovicích srazil v pátek večer vlak devatenáctiletého mladíka. " +
                                 "Ten na místě zemřel. Provoz na železničním koridoru mezi Prahou a Kolínem byl přerušen.",
+                        null,
                         "Novinky.cz",
                         "https://www.novinky.cz/krimi/448006-devatenactilety-mladik-v-praze-neprezil-stret-s-vlakem.html",
                         50.0867,
