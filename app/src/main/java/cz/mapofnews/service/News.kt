@@ -15,4 +15,10 @@ class News() {
 
     lateinit var objectId: String
     var text: String = ""
+
+    override fun toString(): String {
+        return "News(objectId='$objectId', text='$text')"
+    }
+
+
 }

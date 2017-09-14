@@ -15,24 +15,31 @@ class RetrieveManager @Inject constructor(private val retrieveApi: RetrieveApi) 
 
     // all events
     var events = hashMapOf<String, Event>()
-    // map of the event ids mapped to the texts of the events (news)
+    // map of the news ids mapped to the news objects
     var news = hashMapOf<String, News>()
 
 
     fun fetchAllEvents(afterCallback: AppCallback<List<Event>>) {
-        retrieveApi.retrieveAllEvents(object : AppCallback<List<Event>> {
-            override fun handleResponse(response: List<Event>) {
+        retrieveApi.retrieveAllEvents(object : AppCallback<List<Event>?> {
+            override fun handleResponse(response: List<Event>?) {
                 (response as ArrayList<Event>).forEach { event -> events.put(event.objectId, event) }
                 afterCallback.handleResponse(response)
             }
         })
     }
 
-    fun fetchNews(eventId: String) {
-        retrieveApi.retrieveNews(eventId, object : AppCallback<News?> {
-            override fun handleResponse(response: News?) {
-                if (response != null) news.put(eventId, response)
-            }
-        })
+    fun fetchNews(newsId: String, afterCallback: AppCallback<News?>) {
+        if (news.containsKey(newsId)) {
+            // if the news is fetched, return
+            afterCallback.handleResponse(news[newsId])
+        } else {
+            // if not fetched, try to fetch and return
+            retrieveApi.retrieveNews(newsId, object : AppCallback<News?> {
+                override fun handleResponse(response: News?) {
+                    if (response != null) news.put(newsId, response)
+                    afterCallback.handleResponse(response)
+                }
+            })
+        }
     }
 }

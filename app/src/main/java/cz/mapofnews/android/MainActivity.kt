@@ -1,5 +1,7 @@
 package cz.mapofnews.android
 
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.support.v7.app.AppCompatActivity
@@ -7,7 +9,9 @@ import android.view.View
 import com.backendless.Backendless
 import cz.mapofnews.R
 import cz.mapofnews.android.widgets.MySlidingPaneLayout
+import cz.mapofnews.api.AppCallback
 import cz.mapofnews.service.Event
+import cz.mapofnews.service.News
 import cz.mapofnews.service.RetrieveManager
 import dagger.android.AndroidInjection
 import dagger.android.AndroidInjector
@@ -46,6 +50,9 @@ class MainActivity :
     // data manager
     @Inject lateinit var retrieveManager: RetrieveManager
 
+    // active event
+    private var activeEvent: Event? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         AndroidInjection.inject(this)
         super.onCreate(savedInstanceState)
@@ -72,6 +79,7 @@ class MainActivity :
         rightPanel.openPane()
     }
 
+    @Suppress("UNUSED_PARAMETER")
     fun onUpdateClick(v: View) {
         mapViewFragment.loadAndShowMarkers()
         mapViewFragment.mapUntouched = false
@@ -83,18 +91,71 @@ class MainActivity :
      */
     override fun onEventClick(eventId: String) {
         // load data from data layer
-        val event: Event = retrieveManager.events[eventId] ?:
-                throw IllegalArgumentException("Event with objectId $eventId does not exists")
+        val event: Event = retrieveManager.events[eventId] ?: throw IllegalArgumentException("Event with objectId $eventId does not exists")
 
         // assign data to the layout
         titleView.text = event.title
         abstractView.text = event.abstract
         sourceView.text = event.source
         dateView.text = extractDate(event.eventDate)
+        // initially, set read button visibility to gone, it stays like that only if both newsId and link are null
+        readBtn.visibility = View.GONE
+        if (event.newsId == null) {
+            if (event.link != null) {
+                // event has no news assigned, instead read btn, we show open original article
+                readBtn.text = resources.getString(R.string.read_original)
+                readBtn.setOnClickListener({ view -> openOriginalArticle(view) })
+                readBtn.visibility = View.VISIBLE
+            }
+        } else {
+            // event has an news text attached, so we display read button
+            readBtn.text = resources.getString(R.string.read_it)
+            readBtn.setOnClickListener({ view -> startNewsActivity(view) })
+            readBtn.visibility = View.VISIBLE
+        }
+
+        // store event
+        activeEvent = event
 
         // open the panel
         rightPanel.closePane()
     }
+
+    @Suppress("UNUSED_PARAMETER")
+    fun startNewsActivity(v: View) {
+        // create intent (to start the NewsActivity)
+        val newsIntent = Intent(this, NewsActivity::class.java)
+        // test if there is active event
+        val event = activeEvent ?: throw IllegalStateException("Trying to start news activity though no event is active.")
+        // test if the event has news attached
+        val newsId = event.newsId ?: throw IllegalStateException("Event $event has no news attached.")
+        // retrieve news
+        retrieveManager.fetchNews(newsId,
+                object : AppCallback<News?> {
+                    override fun handleResponse(response: News?) {
+                        if (response == null) throw IllegalStateException("Trying to start news activity though event does have news attached")
+                        // add news details to the intent
+                        newsIntent.putExtra(NewsActivity.EXTRA_TEXT, response.text)
+                        newsIntent.putExtra(NewsActivity.EXTRA_TITLE, event.title)
+                        newsIntent.putExtra(NewsActivity.EXTRA_LINK, event.link)
+                        // start the avtivity
+                        startActivity(newsIntent)
+                    }
+
+                })
+    }
+
+    @Suppress("UNUSED_PARAMETER")
+    fun openOriginalArticle(v: View) {
+        // craete intent to open web browser
+        val webBrowserIntent = Intent(Intent.ACTION_VIEW)
+        // test if there is active event
+        val event = activeEvent ?: throw IllegalStateException("Trying to start news activity though no event is active.")
+        webBrowserIntent.data = Uri.parse(event.link) ?: throw IllegalStateException("Link for the original article is null.")
+        // start intent
+        startActivity(webBrowserIntent)
+    }
+
 
     // Slide Panel Event Listener methods
     override fun onPanelClosed(panel: View?) {}
@@ -113,6 +174,10 @@ class MainActivity :
         }
     }
 
+    /**
+     * Extracts string label of the date from the [Date].
+     * Returns labels 'today' or 'yesterday' or date in the format as it is specified in the resources.
+     */
     private fun extractDate(date: Date): String {
         val eventDate = Calendar.getInstance()
         eventDate.time = date
@@ -138,10 +203,16 @@ class MainActivity :
         return SimpleDateFormat(getString(R.string.date_format)).format(date)
     }
 
+    /**
+     * Dagger routine to provide clever injection of a fragment into activity.
+     */
     override fun supportFragmentInjector(): AndroidInjector<Fragment> {
         return fragmentInjector
     }
 
+    /**
+     * When map view fragment is attached to the activity, we store the reference to this fragment.
+     */
     fun registerMapViewFragment(fragment: MapViewFragment) {
         mapViewFragment = fragment
     }

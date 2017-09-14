@@ -15,16 +15,20 @@ class Event() {
                 title: String,
                 abstract: String,
                 source: String,
+                link: String?,
                 lat: Double,
-                lng: Double) : this() {
+                lng: Double,
+                newsId: String?) : this() {
         this.objectId = objectId
         this.type = type
         this.eventDate = eventDate
         this.title = title
         this.abstract = abstract
         this.source = source
+        this.link = link
         this.lat = lat
         this.lng = lng
+        this.newsId = newsId
     }
 
     lateinit var objectId: String
@@ -33,6 +37,13 @@ class Event() {
     var title = ""
     var abstract = ""
     var source = ""
+    var link: String? = null
     var lat: Double  = 0.0
     var lng: Double  = 0.0
+    var newsId: String? = null
+
+    override fun toString(): String {
+        return "Event(objectId='$objectId', type=$type, eventDate=$eventDate, title='$title', abstract='$abstract', source='$source', link=$link, lat=$lat, lng=$lng, newsId=$newsId)"
+    }
+
 }

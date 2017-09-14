@@ -14,14 +14,14 @@ interface RetrieveApi {
      *
      * @param callback defined what happens after the data are fetched
      */
-    fun retrieveAllEvents(callback: AppCallback<List<Event>>)
+    fun retrieveAllEvents(callback: AppCallback<List<Event>?>)
 
     /**
-     * Retrieves a news for the specified event from the backend in an asynchronous manner.
+     * Retrieves a news for the specified newsId from the backend in an asynchronous manner.
      *
-     * @param eventId id of the event, for which news will be fetched
+     * @param newsId id of the news which will be fetched
      * @param callback defined what happens after the data are fetched
      */
-    fun retrieveNews(eventId: String, callback: AppCallback<News?>)
+    fun retrieveNews(newsId: String, callback: AppCallback<News?>)
 
 }

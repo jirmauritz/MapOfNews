@@ -16,6 +16,7 @@ import cz.mapofnews.testconfig.TestingData
 import org.junit.After
 import org.junit.Assert.*
 import org.junit.Before
+import org.junit.BeforeClass
 import org.junit.Test
 import org.junit.runner.RunWith
 import java.text.SimpleDateFormat
@@ -31,10 +32,23 @@ class MainActivityInstrumentationTest {
     private val TAG = MainActivityInstrumentationTest::class.java.name
     // timeout to wait for each action to take efect
     private val DEFAULT_TIMEOUT: Long = 3000
-    // reference to the device
-    private val device: UiDevice by lazy { UiDevice.getInstance(InstrumentationRegistry.getInstrumentation()) }
+
 
     @Inject lateinit var retrieveApi: RetrieveApi
+
+    companion object {
+        // reference to the device
+        private lateinit var device: UiDevice
+
+        @BeforeClass
+        @JvmStatic
+        fun setUpClass() {
+            // get device
+            val instr = InstrumentationRegistry.getInstrumentation()
+            device = UiDevice.getInstance(instr)
+        }
+    }
+
 
     @Before
     fun setUp() {
