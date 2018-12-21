@@ -60,6 +60,7 @@
             app:layout_constraintLeft_toRightOf="@+id/linearLayout"
             android:id="@+id/slideLayout">
 
+        <!--Map-->
         <fragment
                 xmlns:android="http://schemas.android.com/apk/res/android"
                 android:name="cz.mapofnews.android.MapViewFragment"
@@ -67,6 +68,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent" tools:layout="@layout/fragment_map_view">
         </fragment>
+
+        <!--Sliding Panel-->
         <include layout="@layout/layout_right_panel"/>
     </cz.mapofnews.android.widgets.MySlidingPaneLayout>
 </android.support.constraint.ConstraintLayout>

@@ -5,6 +5,7 @@ import android.net.Uri
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.support.v7.app.AppCompatActivity
+import android.text.method.ScrollingMovementMethod
 import android.view.View
 import com.backendless.Backendless
 import com.nostra13.universalimageloader.core.DisplayImageOptions
@@ -26,6 +27,8 @@ import kotlinx.android.synthetic.main.layout_right_panel.*
 import java.text.SimpleDateFormat
 import java.util.*
 import javax.inject.Inject
+
+
 
 class MainActivity :
         AppCompatActivity(),
@@ -130,10 +133,13 @@ class MainActivity :
         }
         // if the event contains image, show it
         if (event.imageUrl != null) {
+            imageView.visibility = View.VISIBLE
             imageLoader.displayImage(event.imageUrl, imageView)
         } else {
-            imageView.setImageDrawable(null)
+            imageView.visibility = View.GONE
         }
+        // set scrollable abstract view
+        abstractView.movementMethod = ScrollingMovementMethod()
 
         // store event
         activeEvent = event

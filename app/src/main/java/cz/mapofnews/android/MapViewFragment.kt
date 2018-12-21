@@ -136,7 +136,7 @@ class MapViewFragment :
     }
 
     fun restore() {
-        //     gMap.animateCamera(CameraUpdateFactory.newLatLngZoom(mapCenter, defaultZoom.toFloat()))
+        gMap.animateCamera(CameraUpdateFactory.newLatLngZoom(mapCenter, defaultZoom))
     }
 
     fun centralizeMarker(panelOpened: Boolean, markerPositionParam: LatLng?) {
