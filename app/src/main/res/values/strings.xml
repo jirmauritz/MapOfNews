@@ -15,9 +15,10 @@
     <string name="when">Kdy:</string>
     <string name="today">dnes</string>
     <string name="yesterday">včera</string>
-    <string name="date_format">d.M.</string>
+    <string name="date_format">d.M</string>
     <string name="back">Zpět</string>
     <string name="error_news_not_ready">Zpráva není připravena na přečtení</string>
     <string name="error">Chyba</string>
-    <string name="read_original">Číst originál</string>
+    <string name="read_original">Na zdroj</string>
+    <string name="img_desc">Image connected with the event.</string>
 </resources>
