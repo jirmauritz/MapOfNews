@@ -1,0 +1,12 @@
+language: android
+android:
+  components:
+    # The BuildTools version used by the project
+    - build-tools-26.0.1
+
+    # The SDK version used to compile the project
+    - android-26
+
+# Workaround for error "some licences have not been accepted" in Travis
+before_install:
+- yes | sdkmanager "platforms;android-28"
