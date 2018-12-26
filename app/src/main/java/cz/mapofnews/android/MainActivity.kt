@@ -29,7 +29,6 @@ import java.util.*
 import javax.inject.Inject
 
 
-
 class MainActivity :
         AppCompatActivity(),
         MapViewFragment.OnFragmentInteractionListener,
@@ -37,7 +36,8 @@ class MainActivity :
         HasSupportFragmentInjector {
 
     // injector for fragments
-    @Inject lateinit var fragmentInjector: DispatchingAndroidInjector<Fragment>
+    @Inject
+    lateinit var fragmentInjector: DispatchingAndroidInjector<Fragment>
 
     private val SERVER_URL: String by lazy { resources.getString(R.string.SERVER_URL) }
     private val APPLICATION_ID: String by lazy { resources.getString(R.string.APPLICATION_ID) }
@@ -57,7 +57,8 @@ class MainActivity :
     private lateinit var rightPanel: MySlidingPaneLayout
 
     // data manager
-    @Inject lateinit var retrieveManager: RetrieveManager
+    @Inject
+    lateinit var retrieveManager: RetrieveManager
 
     // active event
     private var activeEvent: Event? = null
@@ -109,26 +110,29 @@ class MainActivity :
      */
     override fun onEventClick(eventId: String) {
         // load data from data layer
-        val event: Event = retrieveManager.events[eventId] ?: throw IllegalArgumentException("Event with objectId $eventId does not exists")
+        val event: Event = retrieveManager.events[eventId]
+                ?: throw IllegalArgumentException("Event with objectId $eventId does not exists")
 
         // assign data to the layout
         titleView.text = event.title
         abstractView.text = event.abstract
         sourceView.text = event.source
         dateView.text = extractDate(event.eventDate)
-        // initially, set read button visibility to gone, it stays like that only if both newsId and link are null
+
+        // initially, set buttons visibility to gone and switch them on only if the event has data
         readBtn.visibility = View.GONE
-        if (event.newsId == null) {
-            if (event.link != null) {
-                // event has no news assigned, instead read btn, we show open original article
-                readBtn.text = resources.getString(R.string.read_original)
-                readBtn.setOnClickListener({ view -> openOriginalArticle(view) })
-                readBtn.visibility = View.VISIBLE
-            }
-        } else {
-            // event has an news text attached, so we display read button
+        originalBtn.visibility = View.GONE
+
+        // Original webpage button set up
+        if (event.link != null) {
+            originalBtn.text = resources.getString(R.string.read_original)
+            originalBtn.setOnClickListener { view -> openOriginalArticle(view) }
+            originalBtn.visibility = View.VISIBLE
+        }
+        // Read news button set up
+        if (event.newsId != null) {
             readBtn.text = resources.getString(R.string.read_it)
-            readBtn.setOnClickListener({ view -> startNewsActivity(view) })
+            readBtn.setOnClickListener { view -> startNewsActivity(view) }
             readBtn.visibility = View.VISIBLE
         }
         // if the event contains image, show it
@@ -153,9 +157,11 @@ class MainActivity :
         // create intent (to start the NewsActivity)
         val newsIntent = Intent(this, NewsActivity::class.java)
         // test if there is active event
-        val event = activeEvent ?: throw IllegalStateException("Trying to start news activity though no event is active.")
+        val event = activeEvent
+                ?: throw IllegalStateException("Trying to start news activity though no event is active.")
         // test if the event has news attached
-        val newsId = event.newsId ?: throw IllegalStateException("Event $event has no news attached.")
+        val newsId = event.newsId
+                ?: throw IllegalStateException("Event $event has no news attached.")
         // retrieve news
         retrieveManager.fetchNews(newsId,
                 object : AppCallback<News?> {
@@ -177,7 +183,8 @@ class MainActivity :
         // craete intent to open web browser
         val webBrowserIntent = Intent(Intent.ACTION_VIEW)
         // test if there is active event
-        val event = activeEvent ?: throw IllegalStateException("Trying to start news activity though no event is active.")
+        val event = activeEvent
+                ?: throw IllegalStateException("Trying to start news activity though no event is active.")
         webBrowserIntent.data = Uri.parse(event.link) ?: throw IllegalStateException("Link for the original article is null.")
         // start intent
         startActivity(webBrowserIntent)
